@@ -1,13 +1,13 @@
+// Inject faicon
+const faIcon = document.createElement("link");
+faIcon.rel = "stylesheet";
+faIcon.href =
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
+document.head.appendChild(faIcon);
 
-  // Inject faicon
-  const faIcon = document.createElement('link');
-  faIcon.rel = 'stylesheet';
-  faIcon.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
-  document.head.appendChild(faIcon);
-
-  // Inject CSS
-  const style = document.createElement('style');
-  style.textContent = `@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+// Inject CSS
+const style = document.createElement("style");
+style.textContent = `@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   font-family: "Roboto", sans-serif;
@@ -295,11 +295,11 @@ input:focus {
   }
 }
 `;
-  document.head.appendChild(style);
+document.head.appendChild(style);
 
-  // Inject HTML
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = `<div class="chatbot-container slide-top">
+// Inject HTML
+const wrapper = document.createElement("div");
+wrapper.innerHTML = `<div class="chatbot-container slide-top">
       <!-- chatbot header -->
       <div class="chatbot-header">
         <i class="fa-solid fa-robot"></i>
@@ -366,10 +366,10 @@ input:focus {
 
     <!-- chatbot toggle button -->
     <script src="script.js"></script>`;
-  document.body.appendChild(wrapper);
+document.body.appendChild(wrapper);
 
-  // Execute JS
-  const chatbotToggle = document.querySelector(".chatbot-toggle"); // Get the toggle button
+// Execute JS
+const chatbotToggle = document.querySelector(".chatbot-toggle"); // Get the toggle button
 const chatbotContainer = document.querySelector(".chatbot-container"); // Get the chatbot container
 
 function isMobile() {
@@ -444,4 +444,3 @@ closeMobileBtn.onclick = function () {
     icon.classList.add("fa-comment");
   });
 };
-
