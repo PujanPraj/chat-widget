@@ -1,12 +1,13 @@
-
+(function () {
   // Inject faicon
-  const faIcon = document.createElement('link');
-  faIcon.rel = 'stylesheet';
-  faIcon.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
+  const faIcon = document.createElement("link");
+  faIcon.rel = "stylesheet";
+  faIcon.href =
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
   document.head.appendChild(faIcon);
 
   // Inject CSS
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
@@ -303,7 +304,7 @@ input:focus {
   document.head.appendChild(style);
 
   // Inject HTML
-  const wrapper = document.createElement('div');
+  const wrapper = document.createElement("div");
   wrapper.innerHTML = `<div class="chatbot-container slide-top">
       <!-- chatbot header -->
       <div class="chatbot-header">
@@ -352,108 +353,101 @@ input:focus {
       <span class="toggle-btn-mobile"
         ><i class="fa-solid fa-comment" style="color: white"></i
       ></span>
-    </div>
-
-    <!-- chatbot toggle button -->
-    <script
-      src="script.js"
-      data-client-id="client-1"
-      id="chatbot-widget-script"
-    ></script>`;
+    </div>`;
   document.body.appendChild(wrapper);
 
   // Execute JS
+  const currentScript = document.currentScript;
+  const clientId = currentScript?.getAttribute("data-client-id");
+  console.log("🤖 Client ID:", clientId);
+
   // === SELECTORS ===
-const chatbotToggle = document.querySelector(".chatbot-toggle");
-const chatbotContainer = document.querySelector(".chatbot-container");
-const chatInput = document.getElementById("chat-input");
-const sendBtn = document.getElementById("send-btn");
-const chatBody = document.querySelector(".chatbot-body");
-const closeMobileBtn = document.querySelector(".close-mobile-btn");
+  const chatbotToggle = document.querySelector(".chatbot-toggle");
+  const chatbotContainer = document.querySelector(".chatbot-container");
+  const chatInput = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const chatBody = document.querySelector(".chatbot-body");
+  const closeMobileBtn = document.querySelector(".close-mobile-btn");
 
-// === CLIENT ID DETECTION ===
-const scriptTag = document.getElementById("chatbot-widget-script");
-const clientId = scriptTag.getAttribute("data-client-id");
-console.log("Client ID:", clientId);
+  // === UTILITY ===
+  function isMobile() {
+    return window.innerWidth <= 527;
+  }
 
-// === UTILITY ===
-function isMobile() {
-  return window.innerWidth <= 527;
-}
+  function updateToggleVisibility() {
+    const isChatbotOpen = chatbotContainer.style.display === "flex";
+    chatbotToggle.style.display = isMobile()
+      ? isChatbotOpen
+        ? "none"
+        : "flex"
+      : "flex";
+  }
 
-function updateToggleVisibility() {
-  const isChatbotOpen = chatbotContainer.style.display === "flex";
-  chatbotToggle.style.display = isMobile()
-    ? isChatbotOpen
-      ? "none"
-      : "flex"
-    : "flex";
-}
+  // === TOGGLE CHATBOT ===
+  chatbotToggle.onclick = function () {
+    const isOpen = chatbotContainer.style.display === "flex";
+    const icon = chatbotToggle.querySelector("i");
+    const rotateClass = isOpen ? "rotate-center-reverse" : "rotate-center";
 
-// === TOGGLE CHATBOT ===
-chatbotToggle.onclick = function () {
-  const isOpen = chatbotContainer.style.display === "flex";
-  const icon = chatbotToggle.querySelector("i");
-  const rotateClass = isOpen ? "rotate-center-reverse" : "rotate-center";
+    icon.classList.add(rotateClass);
+    icon.addEventListener("animationend", function handleRotation() {
+      icon.classList.remove(rotateClass);
+      icon.removeEventListener("animationend", handleRotation);
+    });
 
-  icon.classList.add(rotateClass);
-  icon.addEventListener("animationend", function handleRotation() {
-    icon.classList.remove(rotateClass);
-    icon.removeEventListener("animationend", handleRotation);
-  });
+    if (isOpen) {
+      icon.classList.replace("fa-times", "fa-comment");
+      chatbotContainer.classList.replace("slide-top", "slide-bottom");
+      chatbotContainer.addEventListener("animationend", function handleClose() {
+        chatbotContainer.style.display = "none";
+        chatbotContainer.classList.remove("slide-bottom");
+        chatbotContainer.removeEventListener("animationend", handleClose);
+        updateToggleVisibility();
+      });
+    } else {
+      icon.classList.replace("fa-comment", "fa-times");
+      chatbotContainer.style.display = "flex";
+      chatbotContainer.classList.remove("slide-bottom");
+      chatbotContainer.classList.add("slide-top");
+      updateToggleVisibility();
+    }
+  };
 
-  if (isOpen) {
-    icon.classList.replace("fa-times", "fa-comment");
+  // === CLOSE CHAT ON MOBILE ===
+  closeMobileBtn.onclick = function () {
     chatbotContainer.classList.replace("slide-top", "slide-bottom");
     chatbotContainer.addEventListener("animationend", function handleClose() {
       chatbotContainer.style.display = "none";
       chatbotContainer.classList.remove("slide-bottom");
       chatbotContainer.removeEventListener("animationend", handleClose);
+
+      const icon = chatbotToggle.querySelector("i");
+      icon.classList.replace("fa-times", "fa-comment");
       updateToggleVisibility();
     });
-  } else {
-    icon.classList.replace("fa-comment", "fa-times");
-    chatbotContainer.style.display = "flex";
-    chatbotContainer.classList.remove("slide-bottom");
-    chatbotContainer.classList.add("slide-top");
-    updateToggleVisibility();
-  }
-};
+  };
 
-// === CLOSE CHAT ON MOBILE ===
-closeMobileBtn.onclick = function () {
-  chatbotContainer.classList.replace("slide-top", "slide-bottom");
-  chatbotContainer.addEventListener("animationend", function handleClose() {
-    chatbotContainer.style.display = "none";
-    chatbotContainer.classList.remove("slide-bottom");
-    chatbotContainer.removeEventListener("animationend", handleClose);
+  // === CHAT SENDING LOGIC ===
+  async function sendMessage() {
+    const userMessage = chatInput.value.trim();
+    if (!userMessage) return;
 
-    const icon = chatbotToggle.querySelector("i");
-    icon.classList.replace("fa-times", "fa-comment");
-    updateToggleVisibility();
-  });
-};
+    // Add user message
+    const userMsgElement = document.createElement("div");
+    userMsgElement.className = "message user-msg";
+    userMsgElement.innerHTML = `<p>${userMessage}</p>`;
+    chatBody.appendChild(userMsgElement);
+    saveChatHistory();
+    chatInput.value = "";
 
-// === CHAT SENDING LOGIC ===
-async function sendMessage() {
-  const userMessage = chatInput.value.trim();
-  if (!userMessage) return;
+    try {
+      const response = await fetch("https://dummyjson.com/products/1");
+      const data = await response.json();
 
-  // Add user message
-  const userMsgElement = document.createElement("div");
-  userMsgElement.className = "message user-msg";
-  userMsgElement.innerHTML = `<p>${userMessage}</p>`;
-  chatBody.appendChild(userMsgElement);
-  chatInput.value = "";
-
-  try {
-    const response = await fetch("https://dummyjson.com/products/1");
-    const data = await response.json();
-
-    // add bot message
-    const botMsgElement = document.createElement("div");
-    botMsgElement.className = "message-bot";
-    botMsgElement.innerHTML = `
+      // add bot message
+      const botMsgElement = document.createElement("div");
+      botMsgElement.className = "message-bot";
+      botMsgElement.innerHTML = `
       <i class="fa-solid fa-robot"></i>
       <div class="message bot-msg">
         <img
@@ -465,18 +459,34 @@ async function sendMessage() {
         <p>${data.description}</p>
       </div>
     `;
-    chatBody.appendChild(botMsgElement);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  } catch (error) {
-    alert("Failed to fetch response");
+      chatBody.appendChild(botMsgElement);
+      saveChatHistory();
+      chatBody.scrollTop = chatBody.scrollHeight;
+    } catch (error) {
+      alert("Failed to fetch response");
+    }
   }
-}
 
-// === EVENT LISTENERS ===
-sendBtn.addEventListener("click", sendMessage);
-chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
-window.addEventListener("resize", updateToggleVisibility);
-window.addEventListener("DOMContentLoaded", updateToggleVisibility);
+  // === LOAD CHAT FROM LOCALSTORAGE ===
+  const loadChatHistory = () => {
+    const saved = localStorage.getItem("chatHistory");
+    if (saved) {
+      chatBody.innerHTML = saved;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  };
 
+  // === SAVE CHAT TO LOCALSTORAGE
+  const saveChatHistory = () => {
+    localStorage.setItem("chatHistory", JSON.stringify(chatBody.innerHTML));
+  };
+
+  // === EVENT LISTENERS ===
+  sendBtn.addEventListener("click", sendMessage);
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
+  window.addEventListener("resize", updateToggleVisibility);
+  window.addEventListener("DOMContentLoaded", updateToggleVisibility);
+  window.addEventListener("DOMContentLoaded", loadChatHistory);
+})();
