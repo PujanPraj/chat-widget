@@ -1,13 +1,13 @@
-// Inject faicon
-const faIcon = document.createElement("link");
-faIcon.rel = "stylesheet";
-faIcon.href =
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
-document.head.appendChild(faIcon);
 
-// Inject CSS
-const style = document.createElement("style");
-style.textContent = `@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+  // Inject faicon
+  const faIcon = document.createElement('link');
+  faIcon.rel = 'stylesheet';
+  faIcon.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
+  document.head.appendChild(faIcon);
+
+  // Inject CSS
+  const style = document.createElement('style');
+  style.textContent = `@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   font-family: "Roboto", sans-serif;
@@ -91,6 +91,7 @@ img {
   overflow-y: auto;
   padding: 20px;
   height: 480px;
+  background-color: white;
   border-bottom: 1px solid #ccc;
   display: flex;
   flex-direction: column;
@@ -143,6 +144,10 @@ input:focus {
   outline: none;
 }
 
+.send-btn {
+  cursor: pointer;
+}
+
 .chatbot-footer {
   display: flex;
   padding: 12px;
@@ -174,7 +179,7 @@ input:focus {
   font-size: 28px;
   color: var(--primary-background-color);
   background-color: white;
-  padding: 10px 7px;
+  padding: 10px 8px;
   border-radius: 50%;
 }
 
@@ -295,11 +300,11 @@ input:focus {
   }
 }
 `;
-document.head.appendChild(style);
+  document.head.appendChild(style);
 
-// Inject HTML
-const wrapper = document.createElement("div");
-wrapper.innerHTML = `<div class="chatbot-container slide-top">
+  // Inject HTML
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `<div class="chatbot-container slide-top">
       <!-- chatbot header -->
       <div class="chatbot-header">
         <i class="fa-solid fa-robot"></i>
@@ -323,35 +328,17 @@ wrapper.innerHTML = `<div class="chatbot-container slide-top">
       </div>
 
       <!-- chatbot body -->
-      <div class="chatbot-body">
-        <div class="message user-msg">
-          <p>hi</p>
-        </div>
-        <div class="message-bot">
-          <i class="fa-solid fa-robot"></i>
-          <div class="message bot-msg">
-            <img
-              src="https://www.w3schools.com/w3images/avatar2.png"
-              alt="User"
-              style="width: 32px; height: 32px"
-            />
-            <p>Hi! I am AI chat bot,</p>
-            <p>How can I help you today?</p>
-          </div>
-        </div>
-        <div class="message user-msg">
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-            Repellendus dicta est qui perferendis, molestiae delectus maiores
-            nobis praesentium autem explicabo!
-          </p>
-        </div>
-      </div>
+      <div class="chatbot-body"></div>
 
       <!-- chatbot footer -->
       <div class="chatbot-footer">
-        <input type="text" id="chatInput" placeholder="Type your message" />
-        <button>
+        <input
+          type="text"
+          id="chat-input"
+          autocomplete="off"
+          placeholder="Type your message"
+        />
+        <button id="send-btn" class="send-btn">
           <i class="fa-solid fa-paper-plane" style="font-size: 20px"></i>
         </button>
       </div>
@@ -362,26 +349,53 @@ wrapper.innerHTML = `<div class="chatbot-container slide-top">
       <span class="toggle-btn"
         ><i class="fa-solid fa-comment" style="color: white"></i
       ></span>
+      <span class="toggle-btn-mobile"
+        ><i class="fa-solid fa-comment" style="color: white"></i
+      ></span>
     </div>
 
     <!-- chatbot toggle button -->
-    <script src="script.js"></script>`;
-document.body.appendChild(wrapper);
+    <script
+      src="script.js"
+      data-client-id="client-1"
+      id="chatbot-widget-script"
+    ></script>`;
+  document.body.appendChild(wrapper);
 
-// Execute JS
-const chatbotToggle = document.querySelector(".chatbot-toggle"); // Get the toggle button
-const chatbotContainer = document.querySelector(".chatbot-container"); // Get the chatbot container
+  // Execute JS
+  // === SELECTORS ===
+const chatbotToggle = document.querySelector(".chatbot-toggle");
+const chatbotContainer = document.querySelector(".chatbot-container");
+const chatInput = document.getElementById("chat-input");
+const sendBtn = document.getElementById("send-btn");
+const chatBody = document.querySelector(".chatbot-body");
+const closeMobileBtn = document.querySelector(".close-mobile-btn");
 
+// === CLIENT ID DETECTION ===
+const scriptTag = document.getElementById("chatbot-widget-script");
+const clientId = scriptTag.getAttribute("data-client-id");
+console.log("Client ID:", clientId);
+
+// === UTILITY ===
 function isMobile() {
   return window.innerWidth <= 527;
 }
 
+function updateToggleVisibility() {
+  const isChatbotOpen = chatbotContainer.style.display === "flex";
+  chatbotToggle.style.display = isMobile()
+    ? isChatbotOpen
+      ? "none"
+      : "flex"
+    : "flex";
+}
+
+// === TOGGLE CHATBOT ===
 chatbotToggle.onclick = function () {
   const isOpen = chatbotContainer.style.display === "flex";
   const icon = chatbotToggle.querySelector("i");
-
-  // rotate the icon
   const rotateClass = isOpen ? "rotate-center-reverse" : "rotate-center";
+
   icon.classList.add(rotateClass);
   icon.addEventListener("animationend", function handleRotation() {
     icon.classList.remove(rotateClass);
@@ -389,58 +403,80 @@ chatbotToggle.onclick = function () {
   });
 
   if (isOpen) {
-    // Switch to comment icon
-    icon.classList.remove("fa-times");
-    icon.classList.add("fa-comment");
-
-    // Slide down to hide
-    chatbotContainer.classList.remove("slide-top");
-    chatbotContainer.classList.add("slide-bottom");
+    icon.classList.replace("fa-times", "fa-comment");
+    chatbotContainer.classList.replace("slide-top", "slide-bottom");
     chatbotContainer.addEventListener("animationend", function handleClose() {
       chatbotContainer.style.display = "none";
       chatbotContainer.classList.remove("slide-bottom");
       chatbotContainer.removeEventListener("animationend", handleClose);
-
-      // show toggle button on mobile after closing
-      if (isMobile()) {
-        chatbotToggle.style.display = "flex";
-      }
+      updateToggleVisibility();
     });
   } else {
-    // Switch to close icon
-    icon.classList.remove("fa-comment");
-    icon.classList.add("fa-times");
-
-    // hide toggle button on mobile after opening
-    if (isMobile()) {
-      chatbotToggle.style.display = "none";
-    }
-
-    // Slide up to show
+    icon.classList.replace("fa-comment", "fa-times");
     chatbotContainer.style.display = "flex";
     chatbotContainer.classList.remove("slide-bottom");
     chatbotContainer.classList.add("slide-top");
+    updateToggleVisibility();
   }
 };
 
-const closeMobileBtn = document.querySelector(".close-mobile-btn");
+// === CLOSE CHAT ON MOBILE ===
 closeMobileBtn.onclick = function () {
-  chatbotContainer.classList.remove("slide-top");
-  chatbotContainer.classList.add("slide-bottom");
-
+  chatbotContainer.classList.replace("slide-top", "slide-bottom");
   chatbotContainer.addEventListener("animationend", function handleClose() {
     chatbotContainer.style.display = "none";
     chatbotContainer.classList.remove("slide-bottom");
     chatbotContainer.removeEventListener("animationend", handleClose);
 
-    // show toggle button on mobile after closing
-    if (isMobile()) {
-      chatbotToggle.style.display = "flex";
-    }
-
-    // reset the icon
     const icon = chatbotToggle.querySelector("i");
-    icon.classList.remove("fa-times");
-    icon.classList.add("fa-comment");
+    icon.classList.replace("fa-times", "fa-comment");
+    updateToggleVisibility();
   });
 };
+
+// === CHAT SENDING LOGIC ===
+async function sendMessage() {
+  const userMessage = chatInput.value.trim();
+  if (!userMessage) return;
+
+  // Add user message
+  const userMsgElement = document.createElement("div");
+  userMsgElement.className = "message user-msg";
+  userMsgElement.innerHTML = `<p>${userMessage}</p>`;
+  chatBody.appendChild(userMsgElement);
+  chatInput.value = "";
+
+  try {
+    const response = await fetch("https://dummyjson.com/products/1");
+    const data = await response.json();
+
+    // add bot message
+    const botMsgElement = document.createElement("div");
+    botMsgElement.className = "message-bot";
+    botMsgElement.innerHTML = `
+      <i class="fa-solid fa-robot"></i>
+      <div class="message bot-msg">
+        <img
+          src="https://www.w3schools.com/w3images/avatar2.png"
+          alt="Bot"
+          style="width: 32px; height: 32px"
+        />
+        <p><strong>${data.title}</strong></p>
+        <p>${data.description}</p>
+      </div>
+    `;
+    chatBody.appendChild(botMsgElement);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  } catch (error) {
+    alert("Failed to fetch response");
+  }
+}
+
+// === EVENT LISTENERS ===
+sendBtn.addEventListener("click", sendMessage);
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
+window.addEventListener("resize", updateToggleVisibility);
+window.addEventListener("DOMContentLoaded", updateToggleVisibility);
+
