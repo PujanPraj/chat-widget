@@ -1,13 +1,12 @@
 (function () {
   // Inject faicon
-  const faIcon = document.createElement("link");
-  faIcon.rel = "stylesheet";
-  faIcon.href =
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
+  const faIcon = document.createElement('link');
+  faIcon.rel = 'stylesheet';
+  faIcon.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
   document.head.appendChild(faIcon);
 
   // Inject CSS
-  const style = document.createElement("style");
+  const style = document.createElement('style');
   style.textContent = `@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
@@ -18,14 +17,28 @@
   --primary-background-color: rgb(23, 147, 163);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  margin-bottom: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary-background-color);
+}
+
+.chatbot-p {
   margin: 0;
+  font-size: 15px;
+}
+.chatbot-h2 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 24px;
 }
 
 img {
@@ -37,10 +50,10 @@ img {
   bottom: -750px;
   right: 24px;
   border-radius: 10px;
-  width: 480px;
+  width: 450px;
   display: none;
   flex-direction: column;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .chatbot-header {
@@ -51,10 +64,6 @@ img {
   padding: 20px;
   border-radius: 10px 10px 0 0;
   color: white;
-}
-
-.chatbot-header > div h2 {
-  margin-bottom: 10px;
 }
 
 .chatbot-header p {
@@ -80,9 +89,8 @@ img {
 
 .chatbot-subheader button {
   font-weight: 400;
-  font-size: 16px;
+  font-size: 15px;
   border: none;
-  border-bottom: 1px solid white;
   background-color: transparent;
   color: white;
   cursor: pointer;
@@ -92,6 +100,7 @@ img {
   overflow-y: auto;
   padding: 20px;
   height: 480px;
+
   background-color: white;
   border-bottom: 1px solid #ccc;
   display: flex;
@@ -134,18 +143,18 @@ img {
   color: white;
 }
 
-input {
+#chatbot-input {
   width: 100%;
   padding: 12px;
   border: none;
   font-size: 18px;
 }
 
-input:focus {
+#chatbot-input:focus {
   outline: none;
 }
 
-.send-btn {
+.chatbot-send-btn {
   cursor: pointer;
 }
 
@@ -160,7 +169,7 @@ input:focus {
   background-color: white;
 }
 
-.toggle-btn {
+.chatbot-toggle-btn {
   cursor: pointer;
   font-size: 28px;
   background-color: var(--primary-background-color);
@@ -188,7 +197,7 @@ input:focus {
   color: var(--primary-background-color);
 }
 
-.close-mobile-btn {
+.chatbot-close-mobile-btn {
   display: none;
   font-size: 20px;
   margin-left: auto;
@@ -294,7 +303,7 @@ input:focus {
     flex: 1;
   }
 
-  .close-mobile-btn {
+  .chatbot-close-mobile-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -304,16 +313,16 @@ input:focus {
   document.head.appendChild(style);
 
   // Inject HTML
-  const wrapper = document.createElement("div");
+  const wrapper = document.createElement('div');
   wrapper.innerHTML = `<div class="chatbot-container slide-top">
       <!-- chatbot header -->
       <div class="chatbot-header">
         <i class="fa-solid fa-robot"></i>
         <div>
-          <h2>My Chatbot</h2>
-          <p>Hello! We are here to assist you on anything.</p>
+          <h2 class="chatbot-h2">My Chatbot</h2>
+          <p class="chatbot-p">Hello! We are here to assist you on anything.</p>
         </div>
-        <span class="close-mobile-btn">
+        <span class="chatbot-close-mobile-btn">
           <i class="fa fa-times"></i>
         </span>
       </div>
@@ -335,11 +344,11 @@ input:focus {
       <div class="chatbot-footer">
         <input
           type="text"
-          id="chat-input"
+          id="chatbot-input"
           autocomplete="off"
           placeholder="Type your message"
         />
-        <button id="send-btn" class="send-btn">
+        <button id="chatbot-send-btn" class="chatbot-send-btn">
           <i class="fa-solid fa-paper-plane" style="font-size: 20px"></i>
         </button>
       </div>
@@ -347,27 +356,29 @@ input:focus {
 
     <!-- chatbot toggle button -->
     <div class="chatbot-toggle">
-      <span class="toggle-btn"
+      <span class="chatbot-toggle-btn"
         ><i class="fa-solid fa-comment" style="color: white"></i
       ></span>
-      <span class="toggle-btn-mobile"
+      <span class="chatbot-toggle-btn-mobile"
         ><i class="fa-solid fa-comment" style="color: white"></i
       ></span>
     </div>`;
   document.body.appendChild(wrapper);
 
   // Execute JS
+  (function () {
   const currentScript = document.currentScript;
-  const clientId = currentScript?.getAttribute("data-client-id");
+  const clientId =
+    currentScript?.getAttribute("data-client-id") || "default-client";
   console.log("🤖 Client ID:", clientId);
 
   // === SELECTORS ===
   const chatbotToggle = document.querySelector(".chatbot-toggle");
   const chatbotContainer = document.querySelector(".chatbot-container");
-  const chatInput = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
+  const chatInput = document.getElementById("chatbot-input");
+  const sendBtn = document.getElementById("chatbot-send-btn");
   const chatBody = document.querySelector(".chatbot-body");
-  const closeMobileBtn = document.querySelector(".close-mobile-btn");
+  const closeMobileBtn = document.querySelector(".chatbot-close-mobile-btn");
 
   // === UTILITY ===
   function isMobile() {
@@ -435,9 +446,9 @@ input:focus {
     // Add user message
     const userMsgElement = document.createElement("div");
     userMsgElement.className = "message user-msg";
-    userMsgElement.innerHTML = `<p>${userMessage}</p>`;
+    userMsgElement.innerHTML = `<p class="chatbot-p">${userMessage}</p>`;
     chatBody.appendChild(userMsgElement);
-    saveChatHistory();
+    // saveChatHistory();
     chatInput.value = "";
 
     try {
@@ -455,31 +466,31 @@ input:focus {
           alt="Bot"
           style="width: 32px; height: 32px"
         />
-        <p><strong>${data.title}</strong></p>
-        <p>${data.description}</p>
+        <p class="chatbot-p"><strong>${data.title}</strong></p>
+        <p class="chatbot-p">${data.description}</p>
       </div>
     `;
       chatBody.appendChild(botMsgElement);
-      saveChatHistory();
+      // saveChatHistory();
       chatBody.scrollTop = chatBody.scrollHeight;
     } catch (error) {
       alert("Failed to fetch response");
     }
   }
 
-  // === LOAD CHAT FROM LOCALSTORAGE ===
-  const loadChatHistory = () => {
-    const saved = localStorage.getItem("chatHistory");
-    if (saved) {
-      chatBody.innerHTML = saved;
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }
-  };
+  // // === LOAD CHAT FROM LOCALSTORAGE ===
+  // const loadChatHistory = () => {
+  //   const saved = localStorage.getItem("chatHistory");
+  //   if (saved) {
+  //     chatBody.innerHTML = saved;
+  //     chatBody.scrollTop = chatBody.scrollHeight;
+  //   }
+  // };
 
   // === SAVE CHAT TO LOCALSTORAGE
-  const saveChatHistory = () => {
-    localStorage.setItem("chatHistory", JSON.stringify(chatBody.innerHTML));
-  };
+  // const saveChatHistory = () => {
+  //   localStorage.setItem("chatHistory", JSON.stringify(chatBody.innerHTML));
+  // };
 
   // === EVENT LISTENERS ===
   sendBtn.addEventListener("click", sendMessage);
@@ -488,5 +499,7 @@ input:focus {
   });
   window.addEventListener("resize", updateToggleVisibility);
   window.addEventListener("DOMContentLoaded", updateToggleVisibility);
-  window.addEventListener("DOMContentLoaded", loadChatHistory);
+  // window.addEventListener("DOMContentLoaded", loadChatHistory);
 })();
+
+  })();
