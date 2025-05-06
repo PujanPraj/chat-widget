@@ -35,22 +35,14 @@
   margin: 0;
   font-size: 15px;
 }
-.chatbot-h2 {
-  margin: 0;
-  font-weight: 600;
-  font-size: 24px;
-}
-
-img {
-  margin-bottom: 8px;
-}
 
 .chatbot-container {
   position: fixed;
   bottom: -750px;
   right: 24px;
   border-radius: 10px;
-  width: 450px;
+  width: 430px;
+  height: 80vh;
   display: none;
   flex-direction: column;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -64,11 +56,6 @@ img {
   padding: 20px;
   border-radius: 10px 10px 0 0;
   color: white;
-}
-
-.chatbot-header p {
-  font-size: 14px;
-  color: #f1f1f1;
 }
 
 .chatbot-subheader {
@@ -99,11 +86,11 @@ img {
 .chatbot-body {
   overflow-y: auto;
   padding: 20px;
-  height: 480px;
   background-color: white;
   border-bottom: 1px solid #ccc;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .chatbot-scroll-to-bottom {
@@ -129,7 +116,7 @@ img {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-  padding: 14px;
+  padding: 7px 12px;
   border-radius: 7px;
   max-width: 60%;
   color: white;
@@ -144,7 +131,7 @@ img {
 .bot-msg {
   align-self: flex-start;
   position: relative;
-  color: rgb(9, 90, 100);
+  color: rgb(11, 108, 121);
   background-color: rgb(226, 255, 255);
 }
 
@@ -165,7 +152,8 @@ img {
   width: 100%;
   padding: 12px;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
+  color: rgb(75, 75, 75);
 }
 
 #chatbot-input:focus {
@@ -174,6 +162,26 @@ img {
 
 .chatbot-send-btn {
   cursor: pointer;
+}
+
+.chatbot-reset-btn {
+  position: relative;
+}
+
+.chatbot-reset-underline {
+  position: absolute;
+  bottom: -2px;
+  left: 0px;
+  right: 0;
+  height: 1px;
+  width: 100%;
+  background-color: lightgray;
+  background: radial-gradient(
+    circle at center,
+    white 0%,
+    lightgray 40%,
+    transparent 70%
+  );
 }
 
 .chatbot-footer {
@@ -362,8 +370,10 @@ img {
       <div class="chatbot-header">
         <i class="fa-solid fa-robot"></i>
         <div>
-          <h2 class="chatbot-h2">My Chatbot</h2>
-          <p class="chatbot-p">Hello! We are here to assist you on anything.</p>
+          <h2 style="margin: 0; font-size: 22px">My Chatbot</h2>
+          <p style="font-size: 12px; margin: 4px 0 0 0px; color: #f1f1f1">
+            Hello! We are here to assist you on anything.
+          </p>
         </div>
         <span class="chatbot-close-mobile-btn">
           <i class="fa fa-times"></i>
@@ -377,7 +387,10 @@ img {
           <i class="fa-brands fa-instagram"></i>
         </div>
 
-        <button id="chatbot-reset-btn">Reset</button>
+        <button id="chatbot-reset-btn" class="chatbot-reset-btn">
+          <span>Reset</span>
+          <span class="chatbot-reset-underline"></span>
+        </button>
       </div>
 
       <!-- chatbot body -->
@@ -511,11 +524,7 @@ img {
       botMsgElement.innerHTML = `
       <i class="fa-solid fa-robot"></i>
       <div class="message bot-msg">
-        <img
-          src="https://www.w3schools.com/w3images/avatar2.png"
-          alt="Bot"
-          style="width: 32px; height: 32px"
-        />
+        
         <p class="chatbot-p"><strong>${data.title}</strong></p>
         <p class="chatbot-p">${data.description}</p>
       </div>
