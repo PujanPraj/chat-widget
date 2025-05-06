@@ -91,11 +91,29 @@ img {
   overflow-y: auto;
   padding: 20px;
   height: 480px;
-
   background-color: white;
   border-bottom: 1px solid #ccc;
   display: flex;
   flex-direction: column;
+}
+
+.chatbot-scroll-to-bottom {
+  position: absolute;
+  bottom: 80px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: opacity 0.3s;
+}
+
+.chatbot-scroll-to-bottom:hover {
+  opacity: 0.8;
 }
 
 .message {
@@ -201,6 +219,26 @@ img {
   height: 14px;
 }
 
+.chatbot-reset-date {
+  text-align: center;
+  font-size: 12px !important;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.chatbot-reset-msg {
+  text-align: center;
+  font-size: 12px !important;
+  color: #999;
+  margin: 15px 0;
+}
+
+.chatbot-reset-msg span {
+  border: 1px solid var(--primary-background-color);
+  padding: 10px;
+  border-radius: 50px;
+}
+
 /* animations */
 .slide-top {
   -webkit-animation: slide-top 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
@@ -298,5 +336,10 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .chatbot-scroll-to-bottom {
+    bottom: 100px;
+    right: 16px;
   }
 }

@@ -100,11 +100,29 @@ img {
   overflow-y: auto;
   padding: 20px;
   height: 480px;
-
   background-color: white;
   border-bottom: 1px solid #ccc;
   display: flex;
   flex-direction: column;
+}
+
+.chatbot-scroll-to-bottom {
+  position: absolute;
+  bottom: 80px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: opacity 0.3s;
+}
+
+.chatbot-scroll-to-bottom:hover {
+  opacity: 0.8;
 }
 
 .message {
@@ -210,6 +228,26 @@ img {
   height: 14px;
 }
 
+.chatbot-reset-date {
+  text-align: center;
+  font-size: 12px !important;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.chatbot-reset-msg {
+  text-align: center;
+  font-size: 12px !important;
+  color: #999;
+  margin: 15px 0;
+}
+
+.chatbot-reset-msg span {
+  border: 1px solid var(--primary-background-color);
+  padding: 10px;
+  border-radius: 50px;
+}
+
 /* animations */
 .slide-top {
   -webkit-animation: slide-top 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
@@ -308,6 +346,11 @@ img {
     justify-content: center;
     align-items: center;
   }
+
+  .chatbot-scroll-to-bottom {
+    bottom: 100px;
+    right: 16px;
+  }
 }
 `;
   document.head.appendChild(style);
@@ -334,11 +377,16 @@ img {
           <i class="fa-brands fa-instagram"></i>
         </div>
 
-        <button>Reset</button>
+        <button id="chatbot-reset-btn">Reset</button>
       </div>
 
       <!-- chatbot body -->
       <div class="chatbot-body"></div>
+
+      <div
+        class="chatbot-scroll-to-bottom"
+        id="chatbot-scroll-to-bottom-btn"
+      ></div>
 
       <!-- chatbot footer -->
       <div class="chatbot-footer">
@@ -379,6 +427,8 @@ img {
   const sendBtn = document.getElementById("chatbot-send-btn");
   const chatBody = document.querySelector(".chatbot-body");
   const closeMobileBtn = document.querySelector(".chatbot-close-mobile-btn");
+  const scrollBtn = document.getElementById("chatbot-scroll-to-bottom-btn");
+  const resetBtn = document.getElementById("chatbot-reset-btn");
 
   // === UTILITY ===
   function isMobile() {
@@ -472,25 +522,37 @@ img {
     `;
       chatBody.appendChild(botMsgElement);
       // saveChatHistory();
-      chatBody.scrollTop = chatBody.scrollHeight;
+      chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
     } catch (error) {
       alert("Failed to fetch response");
     }
   }
 
-  // // === LOAD CHAT FROM LOCALSTORAGE ===
-  // const loadChatHistory = () => {
-  //   const saved = localStorage.getItem("chatHistory");
-  //   if (saved) {
-  //     chatBody.innerHTML = saved;
-  //     chatBody.scrollTop = chatBody.scrollHeight;
-  //   }
-  // };
+  // === CHAT RESET ===
+  resetBtn.onclick = function () {
+    chatBody.innerHTML = "";
 
-  // === SAVE CHAT TO LOCALSTORAGE
-  // const saveChatHistory = () => {
-  //   localStorage.setItem("chatHistory", JSON.stringify(chatBody.innerHTML));
-  // };
+    const now = new Date();
+    const options = {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+    const timeStamp = now.toLocaleString("en-US", options);
+
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "chatbot-reset-date";
+    dateDiv.innerHTML = `<span>${timeStamp}</span>`;
+
+    const resetMsgElement = document.createElement("div");
+    resetMsgElement.className = "chatbot-reset-msg";
+    resetMsgElement.innerHTML = `<span>Reset the conversation</span>`;
+
+    chatBody.appendChild(dateDiv);
+    chatBody.appendChild(resetMsgElement);
+  };
 
   // === EVENT LISTENERS ===
   sendBtn.addEventListener("click", sendMessage);
@@ -499,7 +561,19 @@ img {
   });
   window.addEventListener("resize", updateToggleVisibility);
   window.addEventListener("DOMContentLoaded", updateToggleVisibility);
-  // window.addEventListener("DOMContentLoaded", loadChatHistory);
+  // Show/hide button on scroll
+  chatBody.addEventListener("scroll", () => {
+    const nearBottom =
+      chatBody.scrollHeight - chatBody.scrollTop <= chatBody.clientHeight + 80;
+    scrollBtn.style.display = nearBottom ? "none" : "block";
+  });
+  // Scroll to bottom on click
+  scrollBtn.addEventListener("click", () => {
+    chatBody.scrollTo({
+      top: chatBody.scrollHeight,
+      behavior: "smooth",
+    });
+  });
 })();
 
   })();

@@ -11,6 +11,8 @@
   const sendBtn = document.getElementById("chatbot-send-btn");
   const chatBody = document.querySelector(".chatbot-body");
   const closeMobileBtn = document.querySelector(".chatbot-close-mobile-btn");
+  const scrollBtn = document.getElementById("chatbot-scroll-to-bottom-btn");
+  const resetBtn = document.getElementById("chatbot-reset-btn");
 
   // === UTILITY ===
   function isMobile() {
@@ -104,25 +106,37 @@
     `;
       chatBody.appendChild(botMsgElement);
       // saveChatHistory();
-      chatBody.scrollTop = chatBody.scrollHeight;
+      chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
     } catch (error) {
       alert("Failed to fetch response");
     }
   }
 
-  // // === LOAD CHAT FROM LOCALSTORAGE ===
-  // const loadChatHistory = () => {
-  //   const saved = localStorage.getItem("chatHistory");
-  //   if (saved) {
-  //     chatBody.innerHTML = saved;
-  //     chatBody.scrollTop = chatBody.scrollHeight;
-  //   }
-  // };
+  // === CHAT RESET ===
+  resetBtn.onclick = function () {
+    chatBody.innerHTML = "";
 
-  // === SAVE CHAT TO LOCALSTORAGE
-  // const saveChatHistory = () => {
-  //   localStorage.setItem("chatHistory", JSON.stringify(chatBody.innerHTML));
-  // };
+    const now = new Date();
+    const options = {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+    const timeStamp = now.toLocaleString("en-US", options);
+
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "chatbot-reset-date";
+    dateDiv.innerHTML = `<span>${timeStamp}</span>`;
+
+    const resetMsgElement = document.createElement("div");
+    resetMsgElement.className = "chatbot-reset-msg";
+    resetMsgElement.innerHTML = `<span>Reset the conversation</span>`;
+
+    chatBody.appendChild(dateDiv);
+    chatBody.appendChild(resetMsgElement);
+  };
 
   // === EVENT LISTENERS ===
   sendBtn.addEventListener("click", sendMessage);
@@ -131,5 +145,17 @@
   });
   window.addEventListener("resize", updateToggleVisibility);
   window.addEventListener("DOMContentLoaded", updateToggleVisibility);
-  // window.addEventListener("DOMContentLoaded", loadChatHistory);
+  // Show/hide button on scroll
+  chatBody.addEventListener("scroll", () => {
+    const nearBottom =
+      chatBody.scrollHeight - chatBody.scrollTop <= chatBody.clientHeight + 80;
+    scrollBtn.style.display = nearBottom ? "none" : "block";
+  });
+  // Scroll to bottom on click
+  scrollBtn.addEventListener("click", () => {
+    chatBody.scrollTo({
+      top: chatBody.scrollHeight,
+      behavior: "smooth",
+    });
+  });
 })();
