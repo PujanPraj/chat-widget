@@ -15,6 +15,8 @@
 
 :root {
   --primary-background-color: rgb(23, 147, 163);
+  --custom-chatbot-blue-color: rgba(91, 131, 205, 1);
+  --custom-chatbot-pink-color: rgba(194, 128, 191, 1);
 }
 
 ::-webkit-scrollbar {
@@ -52,7 +54,12 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  background-color: var(--primary-background-color);
+  /* background-color: var(--primary-background-color); */
+  background-image: linear-gradient(
+    to right,
+    rgba(91, 131, 205, 1) 0%,
+    rgba(194, 128, 191, 1) 100%
+  );
   padding: 20px;
   border-radius: 10px 10px 0 0;
   color: white;
@@ -63,7 +70,12 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
-  background-color: var(--primary-background-color);
+  /* background-color: var(--primary-background-color); */
+  background-image: linear-gradient(
+    to right,
+    rgba(91, 131, 205, 1) 0%,
+    rgba(194, 128, 191, 1) 100%
+  );
   color: white;
   border-top: 1px solid #ccc;
 }
@@ -125,14 +137,16 @@
 .user-msg {
   align-self: flex-end;
   position: relative;
-  background-color: var(--primary-background-color);
+  /* background-color: var(--primary-background-color); */
+  background-color: var(--custom-chatbot-pink-color);
 }
 
 .bot-msg {
   align-self: flex-start;
   position: relative;
   color: rgb(11, 108, 121);
-  background-color: rgb(226, 255, 255);
+  /* background-color: rgb(226, 255, 255); */
+  background-color: var(--custom-chatbot-blue-color);
 }
 
 .message-bot {
@@ -144,7 +158,8 @@
 
 .message-bot i {
   font-size: 14px;
-  background-color: var(--primary-background-color);
+  /* background-color: var(--primary-background-color); */
+  background-color: var(--custom-chatbot-blue-color);
   color: white;
 }
 
@@ -198,7 +213,12 @@
 .chatbot-toggle-btn {
   cursor: pointer;
   font-size: 28px;
-  background-color: var(--primary-background-color);
+  /* background-color: var(--primary-background-color); */
+  background-image: linear-gradient(
+    to right,
+    rgba(91, 131, 205, 1) 0%,
+    rgba(194, 128, 191, 1) 100%
+  );
   padding: 14px;
   width: 28px;
   display: flex;
@@ -213,14 +233,16 @@
 
 .fa-robot {
   font-size: 28px;
-  color: var(--primary-background-color);
+  /* color: var(--primary-background-color); */
+  color: var(--custom-chatbot-blue-color);
   background-color: white;
   padding: 10px 8px;
   border-radius: 50%;
 }
 
 .fa-paper-plane {
-  color: var(--primary-background-color);
+  /* color: var(--primary-background-color); */
+  color: var(--custom-chatbot-pink-color);
 }
 
 .chatbot-close-mobile-btn {
@@ -251,7 +273,8 @@
 }
 
 .chatbot-reset-msg span {
-  border: 1px solid var(--primary-background-color);
+  border: 1px solid var(--custom-chatbot-blue-color);
+
   padding: 10px;
   border-radius: 50px;
 }
@@ -429,8 +452,7 @@
   // Execute JS
   (function () {
   const currentScript = document.currentScript;
-  const clientId =
-    currentScript?.getAttribute("data-client-id") || "default-client";
+  const clientId = currentScript?.getAttribute("data-client-id");
   console.log("🤖 Client ID:", clientId);
 
   // === SELECTORS ===
@@ -511,12 +533,20 @@
     userMsgElement.className = "message user-msg";
     userMsgElement.innerHTML = `<p class="chatbot-p">${userMessage}</p>`;
     chatBody.appendChild(userMsgElement);
-    // saveChatHistory();
     chatInput.value = "";
 
     try {
-      const response = await fetch("https://dummyjson.com/products/1");
+      const response = await fetch(
+        `https://sms.synctech.ai/receive-chat/?From=+9779843724273&To=19093421819&Text=?${userMessage}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
+      console.log("🤖 Response:", data);
 
       // add bot message
       const botMsgElement = document.createElement("div");
@@ -524,13 +554,10 @@
       botMsgElement.innerHTML = `
       <i class="fa-solid fa-robot"></i>
       <div class="message bot-msg">
-        
-        <p class="chatbot-p"><strong>${data.title}</strong></p>
-        <p class="chatbot-p">${data.description}</p>
+        <p class="chatbot-p">${data.response}</p>
       </div>
     `;
       chatBody.appendChild(botMsgElement);
-      // saveChatHistory();
       chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
     } catch (error) {
       alert("Failed to fetch response");
