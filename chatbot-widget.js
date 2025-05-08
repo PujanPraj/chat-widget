@@ -31,7 +31,7 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-background-color);
+  background: rgba(194, 128, 191, 1) 100%;
 }
 
 .chatbot-p {
@@ -54,8 +54,7 @@
 .chatbot-header {
   display: flex;
   align-items: center;
-  gap: 24px;
-  /* background-color: var(--primary-background-color); */
+  gap: 15px;
   background-image: linear-gradient(
     to right,
     rgba(91, 131, 205, 1) 0%,
@@ -71,7 +70,6 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
-  /* background-color: var(--primary-background-color); */
   background-image: linear-gradient(
     to right,
     rgba(91, 131, 205, 1) 0%,
@@ -98,6 +96,7 @@
 
 .chatbot-body {
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   background-color: white;
   border-bottom: 1px solid #ccc;
@@ -138,7 +137,6 @@
 .user-msg {
   align-self: flex-end;
   position: relative;
-  /* background-color: var(--primary-background-color); */
   background-color: var(--custom-chatbot-pink-color);
 }
 
@@ -159,7 +157,6 @@
 
 .message-bot i {
   font-size: 14px;
-  /* background-color: var(--primary-background-color); */
   background-color: var(--custom-chatbot-blue-color);
   color: white;
 }
@@ -214,7 +211,6 @@
 .chatbot-toggle-btn {
   cursor: pointer;
   font-size: 28px;
-  /* background-color: var(--primary-background-color); */
   background-image: linear-gradient(
     to right,
     rgba(91, 131, 205, 1) 0%,
@@ -394,7 +390,7 @@
       <div class="chatbot-header">
         <i class="fa-solid fa-robot"></i>
         <div>
-          <h2 style="margin: 0; font-size: 22px">My Chatbot</h2>
+          <h2 style="margin: 0; font-size: 22px">Synctech Support</h2>
           <p style="font-size: 12px; margin: 4px 0 0 0px; color: #f1f1f1">
             Hello! We are here to assist you on anything.
           </p>
@@ -452,9 +448,9 @@
 
   // Execute JS
   (function () {
+    // === CLIENT ID ===
     const currentScript = document.currentScript;
-    const clientId = currentScript?.getAttribute("data-client-id");
-    console.log("🤖 Client ID:", clientId);
+    const clientId = currentScript?.getAttribute("client-id");
 
     // === SELECTORS ===
     const chatbotToggle = document.querySelector(".chatbot-toggle");
@@ -527,6 +523,33 @@
       });
     };
 
+    // === CHATBOT INITIAL MESSAGE ===
+    if (!localStorage.getItem("chatHistory")) {
+      async function fetchInitialBotMessage() {
+        try {
+          const response = await fetch(
+            `https://sms.synctech.ai/get-client/?client_id=${clientId}`
+          );
+          const data = await response.json();
+          const initialMessage = data.response;
+
+          const initialMsgElement = document.createElement("div");
+          initialMsgElement.className = "message-bot";
+          initialMsgElement.innerHTML = `
+          <i class="fa-solid fa-robot"></i>
+          <div class="message bot-msg">
+            <p class="chatbot-p">${data.response}</p>
+          </div>
+          `;
+
+          chatBody.appendChild(initialMsgElement);
+        } catch (error) {
+          console.log("Error fetching initial bot message:", error);
+        }
+      }
+      fetchInitialBotMessage();
+    }
+
     // === CHAT SENDING LOGIC ===
     async function sendMessage() {
       const userMessage = chatInput.value.trim();
@@ -550,7 +573,6 @@
           }
         );
         const data = await response.json();
-        console.log("🤖 Response:", data);
 
         // add bot message
         const botMsgElement = document.createElement("div");
@@ -563,9 +585,41 @@
     `;
         chatBody.appendChild(botMsgElement);
         chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
+
+        saveMessageToLocalStorage("user", userMessage);
+        saveMessageToLocalStorage("bot", data.response);
       } catch (error) {
         alert("Failed to fetch response");
       }
+    }
+
+    // === SAVE AND LOAD MESSAGES ===
+    function saveMessageToLocalStorage(sender, text) {
+      const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+      chatHistory.push({ sender, text });
+      localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+    }
+
+    // Load messages from local storage
+    function loadMessagesFromLocalStorage() {
+      const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+      chatHistory.forEach(({ sender, text }) => {
+        const msgElement = document.createElement("div");
+        if (sender === "user") {
+          msgElement.className = "message user-msg";
+          msgElement.innerHTML = `<p class="chatbot-p">${text}</p>`;
+        } else {
+          msgElement.className = "message-bot";
+          msgElement.innerHTML = `
+          <i class="fa-solid fa-robot"></i>
+          <div class="message bot-msg">
+            <p class="chatbot-p">${text}</p>
+          </div>
+        `;
+        }
+        chatBody.appendChild(msgElement);
+      });
+      chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "auto" });
     }
 
     // === CHAT RESET ===
@@ -590,6 +644,8 @@
       resetMsgElement.className = "chatbot-reset-msg";
       resetMsgElement.innerHTML = `<span>Reset the conversation</span>`;
 
+      localStorage.removeItem("chatHistory");
+
       chatBody.appendChild(dateDiv);
       chatBody.appendChild(resetMsgElement);
     };
@@ -608,6 +664,8 @@
         chatBody.clientHeight + 80;
       scrollBtn.style.display = nearBottom ? "none" : "block";
     });
+    window.addEventListener("DOMContentLoaded", loadMessagesFromLocalStorage);
+
     // Scroll to bottom on click
     scrollBtn.addEventListener("click", () => {
       chatBody.scrollTo({
