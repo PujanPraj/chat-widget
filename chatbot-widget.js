@@ -525,27 +525,37 @@
 
     // === CHATBOT INITIAL MESSAGE ===
     if (!localStorage.getItem("chatHistory")) {
-      async function fetchInitialBotMessage() {
-        try {
-          const response = await fetch(
-            `https://sms.synctech.ai/get-client/?client_id=${clientId}`
-          );
-          const data = await response.json();
-          const initialMessage = data.response;
-
-          const initialMsgElement = document.createElement("div");
-          initialMsgElement.className = "message-bot";
-          initialMsgElement.innerHTML = `
+      function fetchInitialBotMessage() {
+        const botTypingElement = document.createElement("div");
+        botTypingElement.className = "message-bot";
+        botTypingElement.innerHTML = `
           <i class="fa-solid fa-robot"></i>
           <div class="message bot-msg">
-            <p class="chatbot-p">${data.response}</p>
+            <p class="chatbot-p">typing...</p>
           </div>
           `;
+        chatBody.appendChild(botTypingElement);
+        setTimeout(async () => {
+          try {
+            const response = await fetch(
+              `https://sms.synctech.ai/get-client/?client_id=${clientId}`
+            );
+            const data = await response.json();
 
-          chatBody.appendChild(initialMsgElement);
-        } catch (error) {
-          console.log("Error fetching initial bot message:", error);
-        }
+            const initialMsgElement = document.createElement("div");
+            initialMsgElement.className = "message-bot";
+            initialMsgElement.innerHTML = `
+              <i class="fa-solid fa-robot"></i>
+              <div class="message bot-msg">
+                <p class="chatbot-p">${data.response}</p>
+              </div>
+              `;
+            botTypingElement.remove();
+            chatBody.appendChild(initialMsgElement);
+          } catch (error) {
+            console.log("Error fetching initial bot message:", error);
+          }
+        }, 2000);
       }
       fetchInitialBotMessage();
     }
@@ -563,6 +573,17 @@
       chatInput.value = "";
 
       try {
+        const botTypingElement = document.createElement("div");
+        botTypingElement.className = "message-bot";
+        botTypingElement.innerHTML = `
+        <i class="fa-solid fa-robot"></i>
+        <div class="message bot-msg">
+          <p class="chatbot-p">typing...</p>
+        </div>
+        `;
+        chatBody.appendChild(botTypingElement);
+        chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
+
         const response = await fetch(
           `https://sms.synctech.ai/receive-chat/?From=+9779843724273&To=19093421819&Text=?${userMessage}`,
           {
@@ -583,6 +604,7 @@
         <p class="chatbot-p">${data.response}</p>
       </div>
     `;
+        botTypingElement.remove();
         chatBody.appendChild(botMsgElement);
         chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
 
