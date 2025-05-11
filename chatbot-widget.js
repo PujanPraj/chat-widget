@@ -104,6 +104,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  z-index: 999;
 }
 
 .chatbot-scroll-to-bottom {
@@ -145,7 +146,6 @@
   align-self: flex-start;
   position: relative;
   color: white;
-  /* background-color: rgb(226, 255, 255); */
   background-color: var(--custom-chatbot-blue-color);
 }
 
@@ -164,7 +164,7 @@
 
 #chatbot-input {
   width: 100%;
-  padding: 12px;
+  padding: 22px;
   border: none;
   font-size: 16px;
   color: rgb(75, 75, 75);
@@ -176,6 +176,7 @@
 
 .chatbot-send-btn {
   cursor: pointer;
+  padding-right: 20px;
 }
 
 .chatbot-reset-btn {
@@ -200,7 +201,7 @@
 
 .chatbot-footer {
   display: flex;
-  padding: 12px;
+  // padding: 12px;
 }
 
 .chatbot-footer button {
