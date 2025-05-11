@@ -217,7 +217,6 @@
     rgba(194, 128, 191, 1) 100%
   );
   padding: 14px;
-  width: 28px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -238,7 +237,6 @@
 }
 
 .fa-paper-plane {
-  /* color: var(--primary-background-color); */
   color: var(--custom-chatbot-pink-color);
 }
 
@@ -271,9 +269,28 @@
 
 .chatbot-reset-msg span {
   border: 1px solid var(--custom-chatbot-blue-color);
-
   padding: 10px;
   border-radius: 50px;
+}
+
+.typing-dots span {
+  animation: blink 1.4s infinite;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* animations */
@@ -531,7 +548,7 @@
         botTypingElement.innerHTML = `
           <i class="fa-solid fa-robot"></i>
           <div class="message bot-msg">
-            <p class="chatbot-p">typing...</p>
+            <p class="chatbot-p typing-dots"><span>.</span><span>.</span><span>.</span></p>
           </div>
           `;
         chatBody.appendChild(botTypingElement);
@@ -578,7 +595,7 @@
         botTypingElement.innerHTML = `
         <i class="fa-solid fa-robot"></i>
         <div class="message bot-msg">
-          <p class="chatbot-p">typing...</p>
+          <p class="chatbot-p typing-dots"><span>.</span><span>.</span><span>.</span></p>
         </div>
         `;
         chatBody.appendChild(botTypingElement);
@@ -641,7 +658,6 @@
         }
         chatBody.appendChild(msgElement);
       });
-      chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "auto" });
     }
 
     // === CHAT RESET ===
