@@ -40,6 +40,7 @@
 }
 
 .chatbot-container {
+  z-index: 99;
   position: fixed;
   bottom: -750px;
   right: 24px;
